@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salt Survivor: Battle of pH</title>
+    <style>
+        :root {
+            --primary: #8a2be2;
+            --secondary: #ff69b4;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+        
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .welcome-screen {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .welcome-content {
+            margin-bottom: 2rem;
+        }
+        
+        .welcome-description {
+            margin: 1.5rem 0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .start-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 3rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px rgba(138, 43, 226, 0.3);
+        }
+        
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(138, 43, 226, 0.4);
+        }
+        
+        .start-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(138, 43, 226, 0.4);
+        }
+        
+        .game-screen {
+            display: none;
+            width: 100%;
+            max-width: 1000px;
+        }
+        
+        .level-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .level-step {
+            width: 120px;
+            text-align: center;
+            position: relative;
+            padding-top: 25px;
+        }
+        
+        .level-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: -30px;
+            width: 60px;
+            height: 2px;
+            background-color: #ccc;
+        }
+        
+        .level-step.active::after {
+            background-color: var(--primary);
+        }
+        
+        .level-step .step-number {
+            width: 20px;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .level-step.active .step-number {
+            background-color: var(--primary);
+        }
+        
+        .level-step.completed .step-number {
+            background-color: #4caf50;
+        }
+        
+        .level-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .game-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .score-display {
+            display: flex;
+            align-items: center;
+        }
+        
+        .score-label {
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        .score-value {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        /* Level 1: Klasifikasi Garam */
+        .level1-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .level-title-big {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            text-align: center;
+        }
+        
+        .instructions {
+            text-align: center;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .salt-card {
+            width: 140px;
+            height: 180px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .salt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .salt-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .salt-formula {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .classification-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .classification-button {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-acid {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-base {
+            background-color: #2196f3;
+            color: white;
+        }
+        
+        .btn-neutral {
+            background-color: #9e9e9e;
+            color: white;
+        }
+        
+        .card-feedback {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .feedback-correct {
+            background-color: rgba(76, 175, 80, 0.8);
+        }
+        
+        .feedback-wrong {
+            background-color: rgba(244, 67, 54, 0.8);
+        }
+        
+        .show-feedback {
+            opacity: 1;
+        }
+        
+        .card-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #4caf50;
+            transition: width 0.5s;
+        }
+        
+        .next-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.7rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: background-color 0.2s;
+            display: none;
+        }
+        
+        .next-button:hover {
+            background-color: #7b27c7;
+        }
+        
+        /* Level 2: Simulasi pH */
+        .level2-screen {
+            display: none;
+        }
+        
+        .simulation-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .lab-setup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            position: relative;
+            width: 100%;
+        }
+        
+        .beaker {
+            width: 180px;
+            height: 220px;
+            background-color: rgba(240, 248, 255, 0.7);
+            border: 3px solid #b0c4de;
+            border-radius: 0 0 15px 15px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .beaker::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            width: 200px;
+            height: 20px;
+            background-color: #b0c4de;
+            border-radius: 5px;
+        }
+        
+        .solution {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80%;
+            transition: background-color 1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 2rem;
+        }
+        
+        .salt-selection {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .salt-option {
+            padding: 0.7rem 1.2rem;
+            border-radius: 25px;
+            background-color: #f0f2f5;
+            border: 2px solid #b0c4de;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        
+        .salt-option:hover {
+            background-color: #e0e7ff;
+            transform: translateY(-3px);
+        }
+        
+        .salt-option.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .ph-meter {
+            width: 120px;
+            height: 250px;
+            background-color: #f0f2f5;
+            border-radius: 10px;
+            margin-left: 2rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .ph-display {
+            width: 90%;
+            height: 60px;
+            background-color: #333;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4caf50;
+            font-size: 1.8rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .ph-scale {
+            width: 30px;
+            height: 150px;
+            background: linear-gradient(to bottom, #f44336, #ff9800, #ffeb3b, #8bc34a, #2196f3, #673ab7);
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .ph-marker {
+            position: absolute;
+            left: -10px;
+            width: 50px;
+            height: 4px;
+            background-color: #000;
+            transform: translateY(-2px);
+            transition: top 1s;
+        }
+        
+        .ph-labels {
+            position: absolute;
+            left: 40px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .ph-label-0 {
+            top: 0;
+        }
+        
+        .ph-label-7 {
+            top: 75px;
+        }
+        
+        .ph-label-14 {
+            top: 148px;
+        }
+        
+        .prediction-container {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .prediction-question {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        
+        .prediction-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .prediction-button {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .check-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.7rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: background-color 0.2s;
+        }
+        
+        .check-button:hover {
+            background-color: #7b27c7;
+        }
+        
+        .result-message {
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .correct-result {
+            color: #4caf50;
+        }
+        
+        .wrong-result {
+            color: #f44336;
+        }
+        
+        .explanation {
+            margin-top: 1rem;
+            background-color: #f0f8ff;
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+        
+        .finish-button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.7rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            display: none;
+        }
+        
+        .finish-button:hover {
+            background-color: #3d8b40;
+        }
+        
+        .game-complete {
+            display: none;
+            text-align: center;
+        }
+        
+        .congratulations {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .final-score {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .restart-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.7rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .profesor {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 120px;
+            height: 120px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            overflow: hidden;
+            z-index: 100;
+        }
+        
+        .profesor img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profesor-dialog {
+            position: fixed;
+            bottom: 140px;
+            right: 20px;
+            width: 250px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        
+        .profesor-dialog.show-dialog {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .profesor-dialog::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 30px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+        
+        .dialog-title {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .dialog-content {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .dialog-close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .welcome-screen {
+                padding: 1.5rem;
+            }
+            
+            .game-container {
+                padding: 1.5rem;
+            }
+            
+            .lab-setup {
+                flex-direction: column;
+            }
+            
+            .ph-meter {
+                margin-left: 0;
+                margin-top: 2rem;
+            }
+            
+            .salt-card {
+                width: 120px;
+                height: 160px;
+            }
+            
+            .classification-options {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .prediction-options {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Salt Survivor: Battle of pH</h1>
+        <div class="subtitle">Tantangan Hidrolisis Garam dalam Kehidupan Sehari-hari</div>
+    </header>
+    
+    <main>
+        <!-- Welcome Screen -->
+        <div class="welcome-screen">
+            <div class="welcome-content">
+                <h2>Selamat Datang di Salt Survivor!</h2>
+                <p class="welcome-description">
+                    Selamat datang di dunia interaktif hidrolisis garam! Dalam <strong>Salt Survivor</strong>, kamu akan belajar mengklasifikasikan garam, memprediksi pH larutan, dan bertarung di lab virtual. Tantang dirimu untuk menguasai garam asam, basa, dan netral melalui simulasi dinamis dan kuis menarik. Siap jadi ahli pH?
+                </p>
+            </div>
+            <button class="start-button">Start</button>
+        </div>
+        
+        <!-- Game Screen -->
+        <div class="game-screen">
+            <div class="level-indicator">
+                <div class="level-step active">
+                    <span class="step-number">1</span>
+                    <div class="level-title">Klasifikasi Garam</div>
+                </div>
+                <div class="level-step">
+                    <span class="step-number">2</span>
+                    <div class="level-title">Simulasi pH</div>
+                </div>
+            </div>
+            
+            <div class="game-container">
+                <div class="game-header">
+                    <div class="level-title-big">Level 1: Klasifikasi Garam</div>
+                    <div class="score-display">
+                        <span class="score-label">Skor:</span>
+                        <span class="score-value">0</span>
+                    </div>
+                </div>
+                
+                <!-- Level 1: Klasifikasi Garam -->
+                <div class="level1-screen">
+                    <p class="instructions">
+                        Klasifikasikan jenis garam berikut sebagai garam bersifat asam, basa, atau netral. 
+                        Ingat: Garam dari asam kuat dan basa kuat bersifat netral, garam dari asam kuat dan basa lemah bersifat asam, 
+                        garam dari asam lemah dan basa kuat bersifat basa.
+                    </p>
+                    
+                    <div class="card-container">
+                        <!-- Kartu garam akan ditambahkan melalui JavaScript -->
+                    </div>
+                    
+                    <div class="classification-options">
+                        <button class="classification-button btn-acid">Asam</button>
+                        <button class="classification-button btn-neutral">Netral</button>
+                        <button class="classification-button btn-base">Basa</button>
+                    </div>
+                    
+                    <button class="next-button">Lanjut ke Level 2</button>
+                </div>
+                
+                <!-- Level 2: Simulasi pH -->
+                <div class="level2-screen">
+                    <p class="instructions">
+                        Pilih garam dan prediksi nilai pH larutan garamnya. Kemudian periksa hasilnya dengan pH meter virtual!
+                    </p>
+                    
+                    <div class="simulation-container">
+                        <div class="salt-selection">
+                            <!-- Pilihan garam akan ditambahkan melalui JavaScript -->
+                        </div>
+                        
+                        <div class="lab-setup">
+                            <div class="beaker">
+                                <div class="solution">?</div>
+                            </div>
+                            
+                            <div class="ph-meter">
+                                <div class="ph-display">--</div>
+                                <div class="ph-scale">
+                                    <div class="ph-marker"></div>
+                                    <div class="ph-labels ph-label-0">0</div>
+                                    <div class="ph-labels ph-label-7">7</div>
+                                    <div class="ph-labels ph-label-14">14</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="prediction-container">
+                            <div class="prediction-question">Prediksi pH larutan garam ini:</div>
+                            <div class="prediction-options">
+                                <button class="prediction-button btn-acid" data-prediction="acid">pH < 7 (Asam)</button>
+                                <button class="prediction-button btn-neutral" data-prediction="neutral">pH = 7 (Netral)</button>
+                                <button class="prediction-button btn-base" data-prediction="base">pH > 7 (Basa)</button>
+                            </div>
+                            
+                            <button class="check-button">Cek Hasil</button>
+                            
+                            <div class="result-message"></div>
+                            <div class="explanation"></div>
+                        </div>
+                        
+                        <button class="finish-button">Selesai</button>
+                    </div>
+                </div>
+                
+                <!-- Game Complete Screen -->
+                <div class="game-complete">
+                    <div class="congratulations">Selamat!</div>
+                    <div class="final-score">Skor Akhir: <span class="final-score-value">0</span></div>
+                    <p>Kamu telah berhasil menyelesaikan semua level di Salt Survivor: Battle of pH.</p>
+                    <p>Kamu sekarang memahami konsep hidrolisis garam dan prediksi pH larutannya!</p>
+                    <button class="restart-button">Main Lagi</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Profesor Kimia -->
+    <div class="profesor">
+        <img src="/api/placeholder/120/120" alt="Profesor Kimia">
+    </div>
+    <div class="profesor-dialog">
+        <span class="dialog-close">&times;</span>
+        <div class="dialog-title">Profesor Kimia</div>
+        <div class="dialog-content">
+            Hai! Saya Profesor Kimia yang akan membantu kamu belajar tentang hidrolisis garam. Ayo mulai petualangan kimia!
+        </div>
+    </div>
+    
+    <footer>
+        &copy; 2025 Salt Survivor: Battle of pH | Game Edukasi Kimia
+    </footer>
+    
+    <script>
+        // Data garam untuk Level 1
+        const salts = [
+            { name: "Natrium Klorida", formula: "NaCl", type: "neutral", description: "Garam dapur (NaCl) terbentuk dari reaksi netralisasi antara asam kuat (HCl) dan basa kuat (NaOH), sehingga bersifat netral (pH = 7)." },
+            { name: "Natrium Asetat", formula: "CH₃COONa", type: "base", description: "Natrium asetat (CH₃COONa) terbentuk dari asam lemah (CH₃COOH) dan basa kuat (NaOH). Ion CH₃COO⁻ terhidrolisis menghasilkan ion OH⁻, sehingga larutan bersifat basa (pH > 7)." },
+            { name: "Amonium Klorida", formula: "NH₄Cl", type: "acid", description: "Amonium klorida (NH₄Cl) terbentuk dari asam kuat (HCl) dan basa lemah (NH₃). Ion NH₄⁺ terhidrolisis menghasilkan ion H⁺, sehingga larutan bersifat asam (pH < 7)." },
+            { name: "Kalium Nitrat", formula: "KNO₃", type: "neutral", description: "Kalium nitrat (KNO₃) terbentuk dari asam kuat (HNO₃) dan basa kuat (KOH), sehingga bersifat netral (pH = 7)." },
+            { name: "Amonium Asetat", formula: "NH₄CH₃COO", type: "neutral", description: "Amonium asetat (NH₄CH₃COO) terbentuk dari asam lemah (CH₃COOH) dan basa lemah (NH₃). Kedua ion terhidrolisis, namun pH larutan bergantung pada nilai Ka dan Kb. Pada kasus ini, nilai Ka ≈ Kb sehingga pH ≈ 7." }
+        ];
+        
+         // Data garam untuk Level 2
+        const simulationSalts = [
+            { name: "NaCl", formula: "NaCl", type: "neutral", ph: 7.0, color: "#d0f0ff", explanation: "Natrium klorida (NaCl) terbentuk dari asam kuat (HCl) dan basa kuat (NaOH). Kedua ion (Na⁺ dan Cl⁻) tidak bereaksi dengan air (tidak terhidrolisis), sehingga pH larutan tetap netral (pH = 7)." },
+            { name: "CH₃COONa", formula: "CH₃COONa", type: "base", ph: 9.2, color: "#a0e6ff", explanation: "Natrium asetat (CH₃COONa) terbentuk dari asam lemah (CH₃COOH) dan basa kuat (NaOH). Ion CH₃COO⁻ terhidrolisis menghasilkan ion OH⁻:\nCH₃COO⁻ + H₂O ⇌ CH₃COOH + OH⁻\nsehingga larutan bersifat basa (pH > 7)." },
+            { name: "NH₄Cl", formula: "NH₄Cl", type: "acid", ph: 4.6, color: "#ffcccb", explanation: "Amonium klorida (NH₄Cl) terbentuk dari asam kuat (HCl) dan basa lemah (NH₃). Ion NH₄⁺ terhidrolisis menghasilkan ion H⁺:\nNH₄⁺ + H₂O ⇌ NH₃ + H₃O⁺\nsehingga larutan bersifat asam (pH < 7)." },
+            { name: "KNO₃", formula: "KNO₃", type: "neutral", ph: 7.0, color: "#d0f0ff", explanation: "Kalium nitrat (KNO₃) terbentuk dari asam kuat (HNO₃) dan basa kuat (KOH). Kedua ion (K⁺ dan NO₃⁻) tidak terhidrolisis, sehingga pH larutan tetap netral (pH = 7)." },
+            { name: "NH₄CH₃COO", formula: "NH₄CH₃COO", type: "neutral", ph: 7.0, color: "#e6e6fa", explanation: "Amonium asetat (NH₄CH₃COO) terbentuk dari asam lemah (CH₃COOH) dan basa lemah (NH₃). Kedua ion terhidrolisis:\nNH₄⁺ + H₂O ⇌ NH₃ + H₃O⁺\nCH₃COO⁻ + H₂O ⇌ CH₃COOH + OH⁻\nDalam kasus ini, Ka (CH₃COOH) ≈ Kb (NH₃) sehingga pH ≈ 7." }
+        ];
+        
+        // Variabel game
+        let currentScore = 0;
+        let currentSaltIndex = 0;
+        let currentLevel = 1;
+        let selectedSalt = null;
+        let selectedPrediction = null;
+        let completedCards = 0;
+        
+        // DOM Elements
+        const welcomeScreen = document.querySelector('.welcome-screen');
+        const gameScreen = document.querySelector('.game-screen');
+        const level1Screen = document.querySelector('.level1-screen');
+        const level2Screen = document.querySelector('.level2-screen');
+        const gameCompleteScreen = document.querySelector('.game-complete');
+        const startButton = document.querySelector('.start-button');
+        const nextButton = document.querySelector('.next-button');
+        const finishButton = document.querySelector('.finish-button');
+        const restartButton = document.querySelector('.restart-button');
+        const scoreValue = document.querySelector('.score-value');
+        const finalScoreValue = document.querySelector('.final-score-value');
+        const cardContainer = document.querySelector('.card-container');
+        const classificationButtons = document.querySelectorAll('.classification-button');
+        const saltSelection = document.querySelector('.salt-selection');
+        const predictionButtons = document.querySelectorAll('.prediction-button');
+        const checkButton = document.querySelector('.check-button');
+        const resultMessage = document.querySelector('.result-message');
+        const explanation = document.querySelector('.explanation');
+        const profesor = document.querySelector('.profesor');
+        const profesorDialog = document.querySelector('.profesor-dialog');
+        const dialogClose = document.querySelector('.dialog-close');
+        const beakerSolution = document.querySelector('.solution');
+        const phDisplay = document.querySelector('.ph-display');
+        const phMarker = document.querySelector('.ph-marker');
+        
+        // Inisialisasi game
+        function initGame() {
+            startButton.addEventListener('click', startGame);
+            nextButton.addEventListener('click', goToLevel2);
+            finishButton.addEventListener('click', completeGame);
+            restartButton.addEventListener('click', restartGame);
+            
+            // Profesor Kimia event listeners
+            profesor.addEventListener('click', toggleProfesorDialog);
+            dialogClose.addEventListener('click', closeProfesorDialog);
+            
+            // Classification buttons event listeners
+            classificationButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const classification = button.classList.contains('btn-acid') ? 'acid' : 
+                                         button.classList.contains('btn-base') ? 'base' : 'neutral';
+                    checkClassification(classification);
+                });
+            });
+            
+            // Prediction buttons event listeners
+            predictionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    selectPrediction(button);
+                });
+            });
+            
+            // Check button event listener
+            checkButton.addEventListener('click', checkPrediction);
+        }
+        
+        // Memulai game
+        function startGame() {
+            welcomeScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            initLevel1();
+        }
+        
+        // Inisialisasi Level 1
+        function initLevel1() {
+            // Reset variabel level 1
+            currentSaltIndex = 0;
+            completedCards = 0;
+            
+            // Buat kartu garam
+            createSaltCard(salts[currentSaltIndex]);
+        }
+        
+        // Membuat kartu garam untuk Level 1
+        function createSaltCard(salt) {
+            cardContainer.innerHTML = '';
+            
+            const card = document.createElement('div');
+            card.className = 'salt-card';
+            
+            const name = document.createElement('div');
+            name.className = 'salt-name';
+            name.textContent = salt.name;
+            
+            const formula = document.createElement('div');
+            formula.className = 'salt-formula';
+            formula.textContent = salt.formula;
+            
+            const feedback = document.createElement('div');
+            feedback.className = 'card-feedback';
+            
+            const progress = document.createElement('div');
+            progress.className = 'card-progress';
+            
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress-bar';
+            progressBar.style.width = `${(completedCards / salts.length) * 100}%`;
+            
+            progress.appendChild(progressBar);
+            card.appendChild(name);
+            card.appendChild(formula);
+            card.appendChild(feedback);
+            card.appendChild(progress);
+            
+            cardContainer.appendChild(card);
+        }
+        
+        // Memeriksa klasifikasi garam di Level 1
+        function checkClassification(classification) {
+            const currentSalt = salts[currentSaltIndex];
+            const correct = classification === currentSalt.type;
+            const card = document.querySelector('.salt-card');
+            const feedback = card.querySelector('.card-feedback');
+            
+            if (correct) {
+                feedback.textContent = 'Benar!';
+                feedback.className = 'card-feedback feedback-correct show-feedback';
+                currentScore += 10;
+                scoreValue.textContent = currentScore;
+            } else {
+                feedback.textContent = 'Salah!';
+                feedback.className = 'card-feedback feedback-wrong show-feedback';
+            }
+            
+            // Tampilkan feedback
+            setTimeout(() => {
+                feedback.classList.remove('show-feedback');
+                
+                setTimeout(() => {
+                    completedCards++;
+                    const progressBar = document.querySelector('.progress-bar');
+                    progressBar.style.width = `${(completedCards / salts.length) * 100}%`;
+                    
+                    if (currentSaltIndex < salts.length - 1) {
+                        currentSaltIndex++;
+                        createSaltCard(salts[currentSaltIndex]);
+                    } else {
+                        // Level 1 selesai
+                        nextButton.style.display = 'block';
+                        document.querySelector('.level-step').classList.add('completed');
+                    }
+                }, 300);
+            }, 1500);
+        }
+        
+        // Lanjut ke Level 2
+        function goToLevel2() {
+            level1Screen.style.display = 'none';
+            level2Screen.style.display = 'block';
+            currentLevel = 2;
+            
+            // Update level indicator
+            const levelSteps = document.querySelectorAll('.level-step');
+            levelSteps[0].classList.remove('active');
+            levelSteps[1].classList.add('active');
+            
+            // Update level title
+            document.querySelector('.level-title-big').textContent = 'Level 2: Simulasi pH';
+            
+            initLevel2();
+        }
+        
+        // Inisialisasi Level 2
+        function initLevel2() {
+            // Buat pilihan garam
+            createSaltOptions();
+            
+            // Reset simulasi
+            resetSimulation();
+        }
+        
+        // Membuat pilihan garam untuk Level 2
+        function createSaltOptions() {
+            saltSelection.innerHTML = '';
+            
+            simulationSalts.forEach(salt => {
+                const option = document.createElement('div');
+                option.className = 'salt-option';
+                option.textContent = salt.formula;
+                option.dataset.name = salt.name;
+                
+                option.addEventListener('click', () => {
+                    selectSalt(salt);
+                    document.querySelectorAll('.salt-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    option.classList.add('selected');
+                });
+                
+                saltSelection.appendChild(option);
+            });
+        }
+        
+        // Memilih garam di Level 2
+        function selectSalt(salt) {
+            selectedSalt = salt;
+            resetSimulation();
+        }
+        
+        // Reset simulasi
+        function resetSimulation() {
+            beakerSolution.textContent = selectedSalt ? selectedSalt.formula : '?';
+            beakerSolution.style.backgroundColor = selectedSalt ? selectedSalt.color : 'transparent';
+            phDisplay.textContent = '--';
+            phMarker.style.top = '50%';
+            
+            // Reset prediction
+            selectedPrediction = null;
+            predictionButtons.forEach(button => {
+                button.style.backgroundColor = '';
+            });
+            
+            resultMessage.style.opacity = '0';
+            explanation.style.display = 'none';
+            finishButton.style.display = 'none';
+        }
+        
+        // Memilih prediksi pH
+        function selectPrediction(button) {
+            selectedPrediction = button.dataset.prediction;
+            
+            // Reset semua tombol
+            predictionButtons.forEach(btn => {
+                if (btn.classList.contains('btn-acid')) {
+                    btn.style.backgroundColor = '#f44336';
+                } else if (btn.classList.contains('btn-base')) {
+                    btn.style.backgroundColor = '#2196f3';
+                } else {
+                    btn.style.backgroundColor = '#9e9e9e';
+                }
+            });
+            
+            // Highlight tombol yang dipilih
+            button.style.backgroundColor = '#4caf50';
+        }
+        
+        // Memeriksa prediksi pH
+        function checkPrediction() {
+            if (!selectedSalt || !selectedPrediction) {
+                alert('Pilih garam dan prediksi pH terlebih dahulu!');
+                return;
+            }
+            
+            const correct = selectedPrediction === selectedSalt.type;
+            
+            // Animasi pH meter
+            phDisplay.textContent = selectedSalt.ph.toFixed(1);
+            const phPosition = (1 - selectedSalt.ph / 14) * 100;
+            phMarker.style.top = `${phPosition}%`;
+            
+            // Tampilkan hasil
+            if (correct) {
+                resultMessage.textContent = 'Prediksi benar! 🎉';
+                resultMessage.className = 'result-message correct-result';
+                currentScore += 20;
+                scoreValue.textContent = currentScore;
+            } else {
+                resultMessage.textContent = 'Prediksi salah! ❌';
+                resultMessage.className = 'result-message wrong-result';
+            }
+            
+            resultMessage.style.opacity = '1';
+            
+            // Tampilkan penjelasan
+            explanation.textContent = selectedSalt.explanation;
+            explanation.style.display = 'block';
+            
+            // Tampilkan tombol selesai
+            finishButton.style.display = 'block';
+        }
+        
+        // Menyelesaikan game
+        function completeGame() {
+            level2Screen.style.display = 'none';
+            gameCompleteScreen.style.display = 'block';
+            
+            // Update level indicator
+            document.querySelectorAll('.level-step')[1].classList.add('completed');
+            
+            // Update final score
+            finalScoreValue.textContent = currentScore;
+        }
+        
+        // Memulai ulang game
+        function restartGame() {
+            // Reset score and variables
+            currentScore = 0;
+            scoreValue.textContent = '0';
+            currentSaltIndex = 0;
+            currentLevel = 1;
+            selectedSalt = null;
+            selectedPrediction = null;
+            completedCards = 0;
+            
+            // Reset UI
+            gameCompleteScreen.style.display = 'none';
+            level2Screen.style.display = 'none';
+            level1Screen.style.display = 'block';
+            nextButton.style.display = 'none';
+            
+            // Reset level indicators
+            const levelSteps = document.querySelectorAll('.level-step');
+            levelSteps.forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            levelSteps[0].classList.add('active');
+            
+            // Reset level title
+            document.querySelector('.level-title-big').textContent = 'Level 1: Klasifikasi Garam';
+            
+            // Start level 1
+            initLevel1();
+        }
+        
+        // Toggle dialog profesor
+        function toggleProfesorDialog() {
+            profesorDialog.classList.toggle('show-dialog');
+            
+            // Update dialog content based on current level
+            const dialogContent = profesorDialog.querySelector('.dialog-content');
+            
+            if (currentLevel === 1) {
+                dialogContent.textContent = 'Ingat! Garam dari asam kuat dan basa kuat bersifat netral, garam dari asam kuat dan basa lemah bersifat asam, dan garam dari asam lemah dan basa kuat bersifat basa.';
+            } else {
+                dialogContent.textContent = 'Simulasi pH membantu kamu memahami konsep hidrolisis garam secara visual. Perhatikan warna dan nilai pH larutannya!';
+            }
+        }
+        
+        // Close dialog profesor
+        function closeProfesorDialog() {
+            profesorDialog.classList.remove('show-dialog');
+        }
+ 
